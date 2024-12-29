@@ -1,9 +1,10 @@
 # ZOOBAYD Platform
 
-## Overview
-ZOOBAYD is an AI-powered blockchain development platform
+## Advanced Contract Generator
+Comprehensive AI-powered smart contract generation platform with advanced security analysis and optimization capabilities.
 
-## Key Features
-- AI Smart Contract Generation
-- OAuth Authentication
-- Cross-Chain Support
+### Key Features
+- Multi-blockchain support
+- AI-driven contract generation
+- Real-time security analysis
+- Gas optimization suggestions
