@@ -1,10 +1,10 @@
 # ZOOBAYD Platform
 
-## Advanced Security Rule Engine
-Comprehensive security rule management with dynamic rule creation, validation, and scanning capabilities.
+## Cross-Chain Security Analyzer
+Advanced multi-blockchain security and compatibility assessment tool.
 
 ### Key Features
-- Customizable security rules
-- Comprehensive contract scanning
-- Dynamic risk scoring
-- Persistent rule storage
+- Multi-chain compatibility analysis
+- Comprehensive security risk assessment
+- Deployment possibility evaluation
+- Chain-specific security insights
