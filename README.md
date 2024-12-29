@@ -1,10 +1,11 @@
 # ZOOBAYD Platform
 
-## AI-Powered Security Analyzer
-Advanced machine learning and AI-driven smart contract security analysis tool.
+## Enterprise Collaboration Infrastructure
+Comprehensive workspace, project, and contract collaboration management system.
 
 ### Key Features
-- GPT-4 powered vulnerability insights
-- Machine learning pattern recognition
-- Comprehensive risk scoring
-- Persistent analysis storage
+- Multi-level workspace management
+- Role-based access control
+- Project and contract collaboration
+- Version control for smart contracts
+- Detailed permission management
