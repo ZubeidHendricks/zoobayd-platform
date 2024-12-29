@@ -1,10 +1,10 @@
 # ZOOBAYD Platform
 
-## Advanced Contract Generator
-Comprehensive AI-powered smart contract generation platform with advanced security analysis and optimization capabilities.
+## Advanced Security Vulnerability Detection
+Comprehensive smart contract security analysis with multi-layered vulnerability assessment and persistent tracking.
 
 ### Key Features
-- Multi-blockchain support
-- AI-driven contract generation
-- Real-time security analysis
-- Gas optimization suggestions
+- Multiple vulnerability detection categories
+- Severity-based risk scoring
+- Line-specific vulnerability tracking
+- Persistent vulnerability logging
