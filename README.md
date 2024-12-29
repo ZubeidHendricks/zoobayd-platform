@@ -1,10 +1,10 @@
 # ZOOBAYD Platform
 
-## Cross-Chain Security Analyzer
-Advanced multi-blockchain security and compatibility assessment tool.
+## AI-Powered Security Analyzer
+Advanced machine learning and AI-driven smart contract security analysis tool.
 
 ### Key Features
-- Multi-chain compatibility analysis
-- Comprehensive security risk assessment
-- Deployment possibility evaluation
-- Chain-specific security insights
+- GPT-4 powered vulnerability insights
+- Machine learning pattern recognition
+- Comprehensive risk scoring
+- Persistent analysis storage
