@@ -1,10 +1,11 @@
 # ZOOBAYD Platform
 
-## Extended Cross-Chain Security Analyzer
-Advanced multi-blockchain compatibility and migration analysis tool.
+## Multi-Chain Contract Generator
+Advanced smart contract generation tool supporting multiple blockchain networks.
 
 ### Key Features
-- Support for 9+ blockchain networks
-- Detailed migration complexity assessment
-- Smart contract standard compatibility analysis
-- Network-specific architectural insights
+- Support for 10+ blockchain networks
+- Multi-language contract generation
+- Cross-chain compatibility analysis
+- Adaptive contract standard support
+- Performance and security metrics
