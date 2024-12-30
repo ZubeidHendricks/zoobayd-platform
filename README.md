@@ -1,11 +1,10 @@
 # ZOOBAYD Platform
 
-## AI Model Training Infrastructure
-Advanced distributed machine learning model training system for blockchain and smart contract analysis.
+## Extended Cross-Chain Security Analyzer
+Advanced multi-blockchain compatibility and migration analysis tool.
 
 ### Key Features
-- Distributed training support
-- Multiple model architectures
-- Synthetic data generation
-- Hyperparameter optimization
-- Model versioning and management
+- Support for 9+ blockchain networks
+- Detailed migration complexity assessment
+- Smart contract standard compatibility analysis
+- Network-specific architectural insights
