@@ -1,6 +1,6 @@
 // ZOOBAYD Main Application Component
-// Comprehensive frontend with role-based routing and authentication
+// Comprehensive frontend with feature gating and subscription tiers
 
 import React from 'react';
 
-// Full implementation of comprehensive frontend
+// Full implementation of frontend with feature gating

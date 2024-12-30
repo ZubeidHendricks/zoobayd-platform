@@ -1,11 +1,11 @@
 # ZOOBAYD Platform
 
-## Comprehensive Frontend Application
-Advanced React-based frontend with role-based access, authentication, and modular design.
+## Feature Gating and Subscription Tiers
+Advanced frontend with role-based and tier-based access control.
 
 ### Key Features
-- Role-based routing
-- Lazy-loaded pages
-- Authentication context
-- Responsive sidebar navigation
-- Comprehensive dashboard architecture
+- Multi-tier subscription model
+- Feature access control
+- Upgrade prompts
+- Dynamic sidebar navigation
+- Contextual feature availability
