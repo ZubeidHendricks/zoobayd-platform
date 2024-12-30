@@ -1,11 +1,11 @@
 # ZOOBAYD Platform
 
 ## Feature Gating and Subscription Tiers
-Advanced frontend with role-based and tier-based access control.
+Comprehensive feature management system with multiple subscription levels.
 
 ### Key Features
-- Multi-tier subscription model
-- Feature access control
-- Upgrade prompts
-- Dynamic sidebar navigation
-- Contextual feature availability
+- Granular feature control
+- Tier-based access management
+- Contextual upgrade recommendations
+- Flexible pricing model
+- Usage tracking
