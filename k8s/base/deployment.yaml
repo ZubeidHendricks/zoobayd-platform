@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoobayd-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: zoobayd
+  template:
+    metadata:
+      labels:
+        app: zoobayd
+    spec:
+      containers:
+      - name: platform
+        image: zoobayd/platform:latest
+        ports:
+        - containerPort: 8080

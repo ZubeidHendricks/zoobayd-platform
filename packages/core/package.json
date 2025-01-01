@@ -1,0 +1,10 @@
+{
+  "name": "@zoobayd/core",
+  "version": "0.1.0",
+  "description": "Core functionality for Zoobayd Platform",
+  "main": "dist/index.js",
+  "dependencies": {
+    "typescript": "^4.9.5",
+    "express": "^4.18.2"
+  }
+}

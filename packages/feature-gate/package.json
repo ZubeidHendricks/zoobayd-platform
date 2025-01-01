@@ -1,0 +1,10 @@
+{
+  "name": "@zoobayd/feature-gate",
+  "version": "0.1.0",
+  "description": "Feature gating and subscription management",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@zoobayd/core": "^0.1.0",
+    "redis": "^4.6.5"
+  }
+}

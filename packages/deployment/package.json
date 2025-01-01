@@ -1,0 +1,10 @@
+{
+  "name": "@zoobayd/deployment",
+  "version": "0.1.0",
+  "description": "Deployment management for Zoobayd Platform",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@zoobayd/core": "^0.1.0",
+    "kubernetes-client": "^9.0.0"
+  }
+}
