@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zoobayd-config
+  namespace: zoobayd
+data:
+  REDIS_PORT: "6379"
+  ELASTICSEARCH_URL: "http://elasticsearch-master:9200"
+  JAEGER_ENDPOINT: "http://jaeger-collector:14268/api/traces"
+  LOG_LEVEL: "info"
+  FEATURE_FLAGS: |
+    {
+      "enableMLFeatures": true,
+      "enableAdvancedAnalytics": true,
+      "enableBetaFeatures": false
+    }

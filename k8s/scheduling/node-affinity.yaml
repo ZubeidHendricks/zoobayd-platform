@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoobayd-backend
+  namespace: zoobayd
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/worker
+                operator: Exists
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: instance-type
+                operator: In
+                values:
+                - c5.xlarge
+                - c5.2xlarge
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: zoobayd-backend
+              topologyKey: kubernetes.io/hostname
+      tolerations:
+      - key: dedicated
+        operator: Equal
+        value: zoobayd
+        effect: NoSchedule
+      - key: instance-type
+        operator: Equal
+        value: spot
+        effect: PreferNoSchedule

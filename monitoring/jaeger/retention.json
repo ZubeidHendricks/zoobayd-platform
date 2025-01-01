@@ -1,0 +1,30 @@
+{
+  "retention": {
+    "schedule_frequency": "24h",
+    "traces": {
+      "default": "168h",
+      "by_service": {
+        "zoobayd-backend": {
+          "error": "720h",
+          "feature.quota_check": "336h",
+          "feature.access_check": "336h",
+          "default": "168h"
+        }
+      }
+    },
+    "max_traces_age": "720h"
+  },
+  "rules": [
+    {
+      "type": "tag",
+      "key": "error",
+      "value": "true",
+      "retention": "720h"
+    },
+    {
+      "type": "duration",
+      "min": "1s",
+      "retention": "336h"
+    }
+  ]
+}

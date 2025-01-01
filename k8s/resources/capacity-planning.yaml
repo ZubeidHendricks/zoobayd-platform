@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoobayd-backend
+  namespace: zoobayd
+spec:
+  template:
+    metadata:
+      annotations:
+        capacity.kubernetes.io/profile: "medium"
+    spec:
+      containers:
+      - name: backend
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        env:
+        - name: MAX_WORKERS
+          value: "4"
+        - name: MAX_CONNECTIONS
+          value: "1000"
+        - name: CACHE_SIZE
+          value: "256Mi"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: capacity-hpa
+  namespace: zoobayd 
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: zoobayd-backend
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleUp:
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+    scaleDown:
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 120

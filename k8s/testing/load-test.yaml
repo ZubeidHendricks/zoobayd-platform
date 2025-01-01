@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-load-test
+  namespace: testing
+spec:
+  template:
+    spec:
+      containers:
+      - name: k6
+        image: loadimpact/k6:latest
+        command: ["k6", "run", "/scripts/load-test.js"]
+        env:
+        - name: TARGET_URL
+          value: "http://zoobayd-backend"
+        - name: VUS
+          value: "100"
+        - name: DURATION
+          value: "10m"
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+      volumes:
+      - name: scripts
+        configMap:
+          name: load-test-scripts
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: load-test-scripts
+  namespace: testing
+data:
+  load-test.js: |
+    import http from 'k6/http';
+    import { check, sleep } from 'k6';
+
+    export const options = {
+      stages: [
+        { duration: '2m', target: 50 },
+        { duration: '5m', target: 100 },
+        { duration: '2m', target: 200 },
+        { duration: '1m', target: 0 },
+      ],
+      thresholds: {
+        http_req_duration: ['p(95)<500'],
+        http_req_failed: ['rate<0.01'],
+      },
+    };
+
+    export default function() {
+      const responses = http.batch([
+        ['GET', `${__ENV.TARGET_URL}/api/features`],
+        ['POST', `${__ENV.TARGET_URL}/api/features/usage`],
+        ['GET', `${__ENV.TARGET_URL}/api/metrics`],
+      ]);
+      
+      check(responses[0], {
+        'features status 200': (r) => r.status === 200,
+      });
+      
+      sleep(1);
+    }

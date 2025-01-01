@@ -1,0 +1,122 @@
+{
+  "version": "8.8.0",
+  "objects": [
+    {
+      "id": "feature-usage-dashboard",
+      "type": "dashboard",
+      "attributes": {
+        "title": "Feature Usage Analytics",
+        "panels": [
+          {
+            "type": "visualization",
+            "id": "feature-usage-heatmap",
+            "gridData": {
+              "x": 0,
+              "y": 0,
+              "w": 48,
+              "h": 8
+            },
+            "version": "8.8.0"
+          },
+          {
+            "type": "visualization",
+            "id": "team-usage-breakdown",
+            "gridData": {
+              "x": 0,
+              "y": 8,
+              "w": 24,
+              "h": 8
+            },
+            "version": "8.8.0"
+          },
+          {
+            "type": "visualization",
+            "id": "quota-usage-alerts",
+            "gridData": {
+              "x": 24,
+              "y": 8,
+              "w": 24,
+              "h": 8
+            },
+            "version": "8.8.0"
+          }
+        ],
+        "timeRestore": false,
+        "description": "Feature usage patterns and quota monitoring"
+      }
+    },
+    {
+      "id": "feature-usage-heatmap",
+      "type": "visualization",
+      "attributes": {
+        "title": "Feature Usage Heatmap",
+        "visState": {
+          "type": "heatmap",
+          "params": {
+            "type": "heatmap",
+            "addTooltip": true,
+            "addLegend": true,
+            "enableHover": false,
+            "legendPosition": "right",
+            "times": [],
+            "colorsNumber": 4,
+            "colorSchema": "Blues",
+            "setColorRange": false,
+            "colorsRange": [],
+            "invertColors": false,
+            "percentageMode": false,
+            "valueAxes": [
+              {
+                "show": false,
+                "id": "ValueAxis-1",
+                "type": "value",
+                "scale": {
+                  "type": "linear",
+                  "defaultYExtents": false
+                },
+                "labels": {
+                  "show": false,
+                  "rotate": 0,
+                  "filter": false,
+                  "truncate": 100
+                }
+              }
+            ]
+          },
+          "aggs": [
+            {
+              "id": "1",
+              "enabled": true,
+              "type": "count",
+              "schema": "metric",
+              "params": {}
+            },
+            {
+              "id": "2",
+              "enabled": true,
+              "type": "terms",
+              "schema": "segment",
+              "params": {
+                "field": "feature.keyword",
+                "size": 10,
+                "order": "desc",
+                "orderBy": "1"
+              }
+            },
+            {
+              "id": "3",
+              "enabled": true,
+              "type": "date_histogram",
+              "schema": "group",
+              "params": {
+                "field": "@timestamp",
+                "interval": "auto",
+                "min_doc_count": 1
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

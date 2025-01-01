@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cost-model-trainer
+  namespace: monitoring
+spec:
+  schedule: "0 2 * * 0"  # Weekly at 2 AM Sunday
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: trainer
+            image: ml-trainer:latest
+            resources:
+              limits:
+                nvidia.com/gpu: 1
+            env:
+            - name: TRAINING_DATA_PATH
+              value: "s3://zoobayd-ml/cost-data"
+            - name: MODEL_OUTPUT_PATH
+              value: "s3://zoobayd-ml/models"
+            - name: TRAINING_CONFIG
+              value: "/etc/ml/config.yaml"
+            volumeMounts:
+            - name: ml-config
+              mountPath: /etc/ml
+          volumes:
+          - name: ml-config
+            configMap:
+              name: model-training-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: model-training-config
+data:
+  config.yaml: |
+    training:
+      model:
+        type: "lstm"
+        layers: [128, 64, 32]
+        dropout: 0.2
+      features:
+        - cpu_usage
+        - memory_usage
+        - network_io
+        - disk_io
+        - request_count
+      hyperparameters:
+        batch_size: 32
+        epochs: 100
+        learning_rate: 0.001
+      validation:
+        split: 0.2
+        metrics:
+          - mse
+          - mae
+          - mape
+      early_stopping:
+        patience: 10
+        min_delta: 0.001
+    prediction:
+      horizon: 168h  # 7 days
+      confidence_interval: 0.95
+      update_frequency: 1h

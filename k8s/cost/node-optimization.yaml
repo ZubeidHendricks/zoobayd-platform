@@ -1,0 +1,73 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: cost-optimized
+value: 1000
+globalDefault: false
+description: "Workloads that should run on cost-optimized nodes"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cost-optimizer
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: cost-optimizer
+  template:
+    spec:
+      containers:
+      - name: optimizer
+        image: kubecost/cost-model:latest
+        env:
+        - name: PROMETHEUS_SERVER_ENDPOINT
+          value: http://prometheus:9090
+        - name: CLOUD_PROVIDER
+          value: AWS
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: config
+        configMap:
+          name: cost-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cost-config
+  namespace: kube-system
+data:
+  config.yaml: |
+    clusters:
+      - name: zoobayd
+        provider: AWS
+        spotLabel: node.kubernetes.io/instance-lifecycle
+        regionLabel: topology.kubernetes.io/region
+        priorityClassName: cost-optimized
+    rules:
+      - name: spot-instances
+        description: "Move stateless workloads to spot instances"
+        selector:
+          matchLabels:
+            app.kubernetes.io/stateless: "true"
+        action: MOVE_TO_SPOT
+      - name: rightsizing
+        description: "Rightsize pods based on usage"
+        selector:
+          matchLabels:
+            app.kubernetes.io/monitored: "true"
+        action: RESIZE
+        threshold: 0.6
+      - name: consolidation
+        description: "Consolidate pods on underutilized nodes"
+        action: CONSOLIDATE
+        minUtilization: 0.3

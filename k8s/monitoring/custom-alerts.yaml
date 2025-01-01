@@ -1,0 +1,40 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: custom-node-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: node.custom.rules
+    rules:
+    - alert: HighIoLatency
+      expr: node:io_queue_size:avg5m > 4
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: "Node {{ $labels.instance }} showing high I/O latency"
+        
+    - alert: MemoryPressureSpikes
+      expr: rate(node:memory_pressure_transitions:rate5m[5m]) > 100
+      for: 2m
+      labels:
+        severity: warning
+        
+    - alert: NetworkPacketDrops
+      expr: rate(node:network_saturation:rate5m[5m]) > 50
+      for: 3m
+      labels:
+        severity: warning
+        
+    - alert: NodeSystemdServiceFailed
+      expr: node_systemd_unit_state{state="failed"} > 0
+      for: 1m
+      labels:
+        severity: critical
+        
+    - alert: NodeNTPOutOfSync
+      expr: abs(node_timex_offset_seconds) > 0.1
+      for: 5m
+      labels:
+        severity: warning

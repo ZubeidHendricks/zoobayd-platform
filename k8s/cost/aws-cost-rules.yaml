@@ -1,0 +1,50 @@
+apiVersion: aws.k8s.aws/v1alpha1
+kind: CostOptimizationRule
+metadata:
+  name: aws-cost-rules
+  namespace: monitoring
+spec:
+  rules:
+    - name: right-size-ebs
+      actions:
+        - analyzeVolumeUsage:
+            minUtilization: 40
+            lookbackPeriod: 14d
+        - resizeVolumes:
+            threshold: 60
+    - name: spot-instance-diversification
+      actions:
+        - diversifySpotInstances:
+            minInstanceTypes: 3
+            maxPriceVariance: 20
+    - name: reserved-instance-optimization
+      actions:
+        - analyzeInstanceUsage:
+            minUtilization: 70
+            period: 30d
+        - recommendReservations:
+            commitmentTerm: 1y
+            paymentOption: no-upfront
+    - name: savings-plan-optimization
+      actions:
+        - analyzeSavingsPlanUsage:
+            coverageTarget: 80
+            utilizationTarget: 90
+    - name: cleanup-unused-resources
+      actions:
+        - findUnusedResources:
+            types:
+              - EBS
+              - EIP
+              - ALB
+            unusedDays: 7
+        - tagForDeletion:
+            tag: deletion-candidate
+triggers:
+  - schedule: "0 1 * * *"
+  - onResourceChange: true
+notifications:
+  - type: slack
+    channel: "#cost-optimization"
+  - type: email
+    address: "devops@zoobayd.com"

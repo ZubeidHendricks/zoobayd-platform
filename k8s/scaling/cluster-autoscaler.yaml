@@ -1,0 +1,23 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: ClusterAutoscaler
+metadata:
+  name: zoobayd-cluster-autoscaler
+  namespace: kube-system
+spec:
+  scaleDown:
+    enabled: true
+    delayAfterAdd: 10m
+    delayAfterDelete: 10m
+    delayAfterFailure: 3m
+    unneededTime: 10m
+  scaleDownUnneededTime: 10m
+  scanInterval: 10s
+  maxNodeProvisionTime: 15m
+  nodeGroups:
+    - name: worker-nodes
+      minSize: 3
+      maxSize: 10
+      cloudProvider: aws
+      asgName: zoobayd-worker-nodes
+  cloudProvider: aws
+  awsRegion: us-east-1

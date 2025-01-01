@@ -1,0 +1,107 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: response-effectiveness
+  namespace: monitoring
+spec:
+  groups:
+  - name: response.effectiveness
+    rules:
+    - record: response_success_rate
+      expr: |
+        sum(rate(cost_optimization_actions_total{result="success"}[1h]))
+        /
+        sum(rate(cost_optimization_actions_total[1h]))
+    
+    - record: cost_reduction_effectiveness
+      expr: |
+        (
+          avg_over_time(aws_billing_estimated_charges[24h])
+          -
+          avg_over_time(aws_billing_estimated_charges[1h])
+        )
+        /
+        avg_over_time(aws_billing_estimated_charges[24h])
+
+    - record: resource_utilization_improvement
+      expr: |
+        (
+          avg_over_time(container_cpu_usage_seconds_total[1h])
+          /
+          avg_over_time(container_cpu_usage_seconds_total[24h])
+        ) * 100
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: effectiveness-tracker
+  namespace: monitoring
+spec:
+  template:
+    spec:
+      containers:
+      - name: tracker
+        image: effectiveness-tracker:latest
+        env:
+        - name: TRACKING_CONFIG
+          value: "/etc/tracking/config.yaml"
+        volumeMounts:
+        - name: tracking-config
+          mountPath: /etc/tracking
+      volumes:
+      - name: tracking-config
+        configMap:
+          name: tracking-config
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tracking-config
+data:
+  config.yaml: |
+    tracking:
+      metrics:
+        response_time:
+          threshold: 5m
+          percentiles: [50, 90, 99]
+        
+        effectiveness:
+          cost_reduction:
+            min_improvement: 10
+            measurement_window: 24h
+          resource_optimization:
+            cpu_target: 70
+            memory_target: 75
+        
+        stability:
+          rollback_rate:
+            threshold: 0.1
+            window: 7d
+          error_rate:
+            threshold: 0.05
+            window: 1h
+      
+      analysis:
+        correlation:
+          - [cost_reduction, resource_utilization]
+          - [response_time, effectiveness]
+        trending:
+          window: 30d
+          metrics:
+            - cost_savings
+            - resource_efficiency
+      
+      reporting:
+        interval: 1h
+        formats:
+          - prometheus
+          - json
+        destinations:
+          - grafana
+          - slack
+        alerts:
+          - low_effectiveness
+          - high_rollback_rate
+          - degraded_performance

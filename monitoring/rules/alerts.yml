@@ -1,0 +1,29 @@
+groups:
+  - name: service_alerts
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: High error rate detected
+          description: More than 10% of requests are failing
+
+      - alert: HighLatency
+        expr: http_request_duration_seconds{quantile="0.9"} > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High latency detected
+          description: 90th percentile latency is above 1s
+
+      - alert: QuotaUsageHigh
+        expr: feature_quota_usage > 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Feature quota nearly exhausted
+          description: Feature usage is above 90% of quota

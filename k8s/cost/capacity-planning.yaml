@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capacity-planner
+  namespace: monitoring
+spec:
+  template:
+    spec:
+      containers:
+      - name: planner
+        image: predictive-scaler:latest
+        env:
+        - name: PROMETHEUS_URL
+          value: http://prometheus:9090
+        - name: MIN_NODE_COUNT
+          value: "3"
+        - name: MAX_NODE_COUNT
+          value: "20"
+        - name: FORECAST_WINDOW
+          value: "168h"
+        - name: SCALE_BUFFER
+          value: "20"
+        volumeMounts:
+        - name: prediction-config
+          mountPath: /etc/prediction
+      volumes:
+      - name: prediction-config
+        configMap:
+          name: capacity-prediction
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: capacity-prediction
+  namespace: monitoring
+data:
+  config.yaml: |
+    predictions:
+      metrics:
+        - name: cpu_utilization
+          query: sum(rate(container_cpu_usage_seconds_total{}[5m])) by (node)
+          threshold: 80
+        - name: memory_utilization
+          query: sum(container_memory_usage_bytes{}) by (node)
+          threshold: 75
+      forecasting:
+        methods:
+          - algorithm: exponential_smoothing
+            window: 7d
+          - algorithm: linear_regression
+            window: 30d
+      actions:
+        autoscaling:
+          enabled: true
+          cooldown: 10m
+        notification:
+          slack: true
+          email: true

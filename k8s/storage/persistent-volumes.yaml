@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-data
+  namespace: zoobayd
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: zoobayd-fast
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+  namespace: zoobayd
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: zoobayd-fast
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elasticsearch-data
+  namespace: zoobayd
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: zoobayd-fast
+  resources:
+    requests:
+      storage: 100Gi

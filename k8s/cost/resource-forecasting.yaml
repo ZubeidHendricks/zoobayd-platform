@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-forecaster
+  namespace: monitoring
+spec:
+  template:
+    spec:
+      containers:
+      - name: forecaster
+        image: resource-forecaster:latest
+        env:
+        - name: ML_MODEL_TYPE
+          value: "prophet"
+        - name: FORECAST_HORIZON
+          value: "30d"
+        volumeMounts:
+        - name: ml-models
+          mountPath: /models
+        - name: config
+          mountPath: /config
+      volumes:
+      - name: ml-models
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: forecasting-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forecasting-config
+data:
+  config.yaml: |
+    models:
+      - name: cpu_forecast
+        metrics:
+          - container_cpu_usage_seconds_total
+          - node_cpu_seconds_total
+        features:
+          - time_of_day
+          - day_of_week
+          - month
+        seasonality:
+          - daily
+          - weekly
+          - monthly
+      - name: memory_forecast
+        metrics:
+          - container_memory_usage_bytes
+          - node_memory_MemTotal_bytes
+        threshold: 0.85
+    anomaly_detection:
+      algorithms:
+        - isolation_forest
+        - dbscan
+      sensitivity: 0.95
+      training_window: 30d
+    alerts:
+      thresholds:
+        critical: 0.9
+        warning: 0.8
+      channels:
+        - slack
+        - pagerduty

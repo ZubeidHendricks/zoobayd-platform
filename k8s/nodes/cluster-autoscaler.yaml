@@ -1,0 +1,33 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: ClusterAutoscaler
+metadata:
+  name: cluster-autoscaler
+  namespace: kube-system
+spec:
+  scaleDown:
+    enabled: true
+    delayAfterAdd: "10m"
+    delayAfterDelete: "10m"
+    delayAfterFailure: "3m"
+    unneededTime: "10m"
+  estimator: "binpacking"
+  expendablePodsPriorityCutoff: -10
+  maxNodeProvisionTime: "15m"
+  balanceSimilarNodeGroups: true
+  skipNodesWithLocalStorage: true
+  scanInterval: "10s"
+  scaleDownUtilizationThreshold: 0.5
+  nodeGroups:
+  - name: standard-workers
+    minSize: 3
+    maxSize: 10
+    warmPoolSize: 1
+  - name: cpu-optimized
+    minSize: 2
+    maxSize: 8
+  - name: memory-optimized
+    minSize: 2
+    maxSize: 6
+  - name: spot-workers
+    minSize: 2
+    maxSize: 20

@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: zoobayd-backend-pdb
+  namespace: zoobayd
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: zoobayd-backend

@@ -1,0 +1,32 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: backend-pdb
+  namespace: zoobayd
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: zoobayd-backend
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mongodb-pdb
+  namespace: zoobayd
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: mongodb
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: redis-pdb
+  namespace: zoobayd
+spec:
+  minAvailable: 50%
+  selector:
+    matchLabels:
+      app: redis

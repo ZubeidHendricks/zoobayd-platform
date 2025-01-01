@@ -1,0 +1,31 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: zoobayd-critical
+value: 1000000
+globalDefault: false
+description: "Critical workloads for Zoobayd platform"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: zoobayd-high
+value: 900000
+globalDefault: false
+description: "High priority workloads for Zoobayd platform"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: zoobayd-medium
+value: 800000
+globalDefault: true
+description: "Default priority for Zoobayd platform workloads"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: zoobayd-low
+value: 700000
+globalDefault: false
+description: "Low priority background workloads"

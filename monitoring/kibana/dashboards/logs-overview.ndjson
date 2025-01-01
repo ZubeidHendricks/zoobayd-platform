@@ -1,0 +1,103 @@
+{
+  "version": "8.8.0",
+  "objects": [
+    {
+      "id": "zoobayd-logs-overview",
+      "type": "dashboard",
+      "attributes": {
+        "title": "Zoobayd Logs Overview",
+        "panels": [
+          {
+            "type": "visualization",
+            "id": "error-rate-over-time",
+            "gridData": {
+              "x": 0,
+              "y": 0,
+              "w": 24,
+              "h": 8
+            },
+            "version": "8.8.0"
+          },
+          {
+            "type": "visualization",
+            "id": "status-codes-distribution",
+            "gridData": {
+              "x": 24,
+              "y": 0,
+              "w": 24,
+              "h": 8
+            },
+            "version": "8.8.0"
+          },
+          {
+            "type": "visualization",
+            "id": "slow-requests",
+            "gridData": {
+              "x": 0,
+              "y": 8,
+              "w": 24,
+              "h": 8
+            },
+            "version": "8.8.0"
+          }
+        ],
+        "timeRestore": false,
+        "description": "Overview of system logs and errors"
+      }
+    },
+    {
+      "id": "error-rate-over-time",
+      "type": "visualization",
+      "attributes": {
+        "title": "Error Rate Over Time",
+        "visState": {
+          "type": "line",
+          "params": {
+            "type": "line",
+            "grid": { "categoryLines": false },
+            "categoryAxes": [
+              {
+                "id": "CategoryAxis-1",
+                "type": "category",
+                "position": "bottom",
+                "show": true,
+                "scale": { "type": "linear" },
+                "labels": { "show": true, "filter": true }
+              }
+            ],
+            "valueAxes": [
+              {
+                "id": "ValueAxis-1",
+                "name": "Error Rate",
+                "type": "value",
+                "position": "left",
+                "show": true,
+                "scale": { "type": "linear", "mode": "normal" }
+              }
+            ]
+          },
+          "aggs": [
+            {
+              "id": "1",
+              "enabled": true,
+              "type": "count",
+              "schema": "metric",
+              "params": {}
+            },
+            {
+              "id": "2",
+              "enabled": true,
+              "type": "date_histogram",
+              "schema": "segment",
+              "params": {
+                "field": "@timestamp",
+                "interval": "auto",
+                "min_doc_count": 1
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

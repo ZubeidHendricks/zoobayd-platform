@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-metrics-config
+  namespace: monitoring
+data:
+  config.yaml: |
+    metrics:
+      node:
+        collectors:
+          - name: io_stats
+            interval: 30s
+            rules:
+              - record: node:io_operations:rate5m
+                expr: rate(node_disk_io_now{device!~"^(dm-|ram|loop).+"}[5m])
+              - record: node:io_queue_size:avg5m
+                expr: avg_over_time(node_disk_io_queue_depth{device!~"^(dm-|ram|loop).+"}[5m])
+          - name: memory_pressure
+            interval: 1m
+            rules:
+              - record: node:memory_pressure_transitions:rate5m
+                expr: rate(node_vmstat_pgmajfault[5m])
+          - name: network_saturation
+            interval: 30s
+            rules:
+              - record: node:network_saturation:rate5m
+                expr: rate(node_network_transmit_drop_total{device!~"^(veth.*|docker.*|cilium.*)$"}[5m])
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: custom-metrics-collector
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: custom-metrics-collector
+  template:
+    metadata:
+      labels:
+        app: custom-metrics-collector
+    spec:
+      containers:
+      - name: collector
+        image: prom/node-exporter:latest
+        args:
+        - --collector.textfile.directory=/metrics
+        - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($|/)
+        ports:
+        - containerPort: 9100
+          protocol: TCP
+        volumeMounts:
+        - name: metrics
+          mountPath: /metrics
+        - name: config
+          mountPath: /etc/custom-metrics
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+      volumes:
+      - name: metrics
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: custom-metrics-config

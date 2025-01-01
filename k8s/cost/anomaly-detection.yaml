@@ -1,0 +1,105 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cost-anomaly-rules
+  namespace: monitoring
+spec:
+  groups:
+  - name: cost.anomaly.rules
+    rules:
+    - alert: CostSpike
+      expr: |
+        abs(
+          (
+            sum(aws_billing_estimated_charges) by (service)
+            - avg_over_time(aws_billing_estimated_charges[7d])
+          ) 
+          / 
+          avg_over_time(aws_billing_estimated_charges[7d])
+        ) > 0.3
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        summary: Cost anomaly detected
+        description: Service {{ $labels.service }} shows 30% deviation from weekly average
+    
+    - alert: UnusualResourceConsumption
+      expr: |
+        sum(
+          rate(container_cpu_usage_seconds_total[1h])
+        ) by (pod) 
+        > 
+        quantile_over_time(0.95, 
+          sum(
+            rate(container_cpu_usage_seconds_total[7d])
+          ) by (pod)
+        )
+      for: 30m
+      labels:
+        severity: warning
+      annotations:
+        summary: Unusual resource consumption
+        description: Pod {{ $labels.pod }} consuming more resources than 95th percentile
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: anomaly-detector
+  namespace: monitoring
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: detector
+            image: anomaly-detector:latest
+            env:
+            - name: DETECTION_WINDOW
+              value: "24h"
+            - name: ALERT_THRESHOLD
+              value: "0.95"
+            volumeMounts:
+            - name: config
+              mountPath: /etc/anomaly-detector
+          volumes:
+          - name: config
+            configMap:
+              name: anomaly-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anomaly-config
+data:
+  config.yaml: |
+    detection:
+      algorithms:
+        - type: isolation_forest
+          contamination: 0.1
+        - type: local_outlier_factor
+          n_neighbors: 20
+      metrics:
+        - aws_ec2_cpuutilization_average
+        - aws_ec2_networkin_average
+        - aws_ec2_networkout_average
+        - aws_rds_cpuutilization_average
+      dimensions:
+        - service
+        - region
+        - instance_type
+    notifications:
+      slack:
+        channel: "#cost-alerts"
+      email:
+        recipients:
+          - devops@zoobayd.com
+    remediation:
+      automatic:
+        enabled: true
+        actions:
+          - scale_down_unused_resources
+          - rightsize_overprovisioned_instances

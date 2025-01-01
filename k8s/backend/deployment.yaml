@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoobayd-backend
+  namespace: zoobayd
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: zoobayd-backend
+  template:
+    metadata:
+      labels:
+        app: zoobayd-backend
+    spec:
+      containers:
+      - name: backend
+        image: zoobayd/backend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: zoobayd-secrets
+              key: mongodb-uri
+        - name: REDIS_HOST
+          value: "zoobayd-redis"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20

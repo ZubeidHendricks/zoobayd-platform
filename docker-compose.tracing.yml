@@ -1,3 +1,19 @@
+<<<<<<< HEAD
 version: '3'
 services:
   # Tracing configuration placeholder
+=======
+version: '3.8'
+
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.35
+    ports:
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "14268:14268"
+      - "16686:16686"
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - COLLECTOR_OTLP_ENABLED=true
+>>>>>>> 5d12a47 (Add advanced security, logging, error handling, performance monitoring, and configuration management)

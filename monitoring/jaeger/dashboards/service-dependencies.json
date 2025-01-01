@@ -1,0 +1,42 @@
+{
+  "name": "Service Dependencies",
+  "type": "dag",
+  "config": {
+    "rootService": "zoobayd-backend",
+    "dependencies": {
+      "showLatency": true,
+      "latencyThreshold": 100,
+      "errorRateThreshold": 0.1
+    },
+    "layout": {
+      "rankdir": "LR",
+      "ranksep": 1.0
+    },
+    "services": [
+      {
+        "name": "zoobayd-backend",
+        "tags": ["service"],
+        "alerts": {
+          "errorRate": 0.05,
+          "latencyP99": 500
+        }
+      },
+      {
+        "name": "mongodb",
+        "tags": ["database"],
+        "alerts": {
+          "errorRate": 0.01,
+          "latencyP99": 100
+        }
+      },
+      {
+        "name": "redis",
+        "tags": ["cache"],
+        "alerts": {
+          "errorRate": 0.01,
+          "latencyP99": 50
+        }
+      }
+    ]
+  }
+}

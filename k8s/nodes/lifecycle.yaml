@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: node-lifecycle-manager
+  namespace: kube-system
+spec:
+  schedule: "0 2 * * *"  # Run at 2 AM daily
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: node-lifecycle-manager
+          containers:
+          - name: lifecycle-manager
+            image: bitnami/kubectl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Check node age and drain if older than 30 days
+              OLD_NODES=$(kubectl get nodes -o jsonpath='{range .items[?(@.metadata.creationTimestamp < "$(date -d "30 days ago" -I)")]}{"node "}{.metadata.name}{"\n"}{end}')
+              for node in $OLD_NODES; do
+                echo "Draining node $node"
+                kubectl drain $node --ignore-daemonsets --delete-emptydir-data
+                kubectl delete node $node
+              done
+          restartPolicy: OnFailure
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: node-lifecycle-manager
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-lifecycle-manager
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "delete"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "delete"]
+- apiGroups: [""]
+  resources: ["pods/eviction"]
+  verbs: ["create"]

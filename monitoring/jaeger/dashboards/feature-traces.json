@@ -1,0 +1,37 @@
+{
+  "serviceName": "zoobayd-backend",
+  "operations": [
+    "feature.access_check",
+    "feature.quota_check",
+    "feature.ml_prediction",
+    "feature.ab_test"
+  ],
+  "visType": "trace",
+  "custom": {
+    "minDuration": "100ms",
+    "tags": [
+      {
+        "key": "feature.id",
+        "operator": "exists"
+      }
+    ],
+    "columns": [
+      {
+        "name": "Service",
+        "type": "string",
+        "visible": true
+      },
+      {
+        "name": "Duration",
+        "type": "number",
+        "visible": true,
+        "unit": "ms"
+      },
+      {
+        "name": "Start Time",
+        "type": "date",
+        "visible": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: model-evaluator
+  namespace: monitoring
+spec:
+  schedule: "0 */6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: evaluator
+            image: model-evaluator:latest
+            env:
+              - name: EVAL_CONFIG
+                value: "/etc/eval/config.yaml"
+            volumeMounts:
+              - name: eval-config
+                mountPath: /etc/eval
+              - name: metrics-store
+                mountPath: /metrics
+          volumes:
+            - name: eval-config
+              configMap:
+                name: model-eval-config
+            - name: metrics-store
+              persistentVolumeClaim:
+                claimName: metrics-pvc
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: model-eval-config
+data:
+  config.yaml: |
+    evaluation:
+      metrics:
+        prediction_accuracy:
+          - mape
+          - rmse
+          - r2_score
+          - prediction_interval_coverage
+        model_performance:
+          - inference_latency
+          - memory_usage
+          - prediction_staleness
+        business_impact:
+          - cost_savings
+          - resource_utilization
+          - alert_precision
+      
+      thresholds:
+        mape_threshold: 15.0
+        rmse_threshold: 0.2
+        coverage_threshold: 0.95
+        latency_threshold: 100ms
+      
+      drift_detection:
+        methods:
+          - distribution_shift
+          - concept_drift
+        window_size: 7d
+        significance_level: 0.05
+      
+      reporting:
+        format:
+          - prometheus_metrics
+          - json_logs
+        destinations:
+          - slack
+          - s3
+          - grafana

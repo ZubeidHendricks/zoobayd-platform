@@ -1,0 +1,56 @@
+{
+  "attributes": {
+    "title": "logs-*",
+    "timeFieldName": "@timestamp",
+    "fields": [
+      {
+        "name": "@timestamp",
+        "type": "date",
+        "count": 0,
+        "scripted": false
+      },
+      {
+        "name": "level",
+        "type": "string",
+        "count": 0,
+        "scripted": false
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "count": 0,
+        "scripted": false
+      },
+      {
+        "name": "statusCode",
+        "type": "number",
+        "count": 0,
+        "scripted": false
+      },
+      {
+        "name": "duration",
+        "type": "number",
+        "count": 0,
+        "scripted": false
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "count": 0,
+        "scripted": false
+      },
+      {
+        "name": "teamId",
+        "type": "string",
+        "count": 0,
+        "scripted": false
+      },
+      {
+        "name": "feature",
+        "type": "string",
+        "count": 0,
+        "scripted": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cost-optimizer
+  namespace: monitoring
+spec:
+  template:
+    spec:
+      containers:
+      - name: optimizer
+        image: cost-optimizer:latest
+        env:
+        - name: RESPONSE_CONFIG
+          value: "/etc/response/config.yaml"
+        volumeMounts:
+        - name: response-config
+          mountPath: /etc/response
+      volumes:
+      - name: response-config
+        configMap:
+          name: response-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: response-config
+data:
+  config.yaml: |
+    responses:
+      high_cpu_usage:
+        threshold: 80
+        actions:
+          - scale_horizontally:
+              max_replicas: 10
+              step: 2
+          - notify_team:
+              channel: "#ops-alerts"
+              severity: warning
+      
+      memory_leak:
+        detection:
+          growth_rate: 10
+          duration: 1h
+        actions:
+          - restart_pod:
+              grace_period: 60
+          - notify_team:
+              channel: "#ops-alerts"
+              severity: critical
+      
+      cost_spike:
+        threshold:
+          percentage: 30
+          duration: 1h
+        actions:
+          - analyze_resources:
+              scope: ["ec2", "rds", "ebs"]
+          - terminate_idle:
+              idle_period: 2h
+          - notify_team:
+              channel: "#cost-alerts"
+              severity: high
+      
+      underutilization:
+        detection:
+          cpu_threshold: 20
+          memory_threshold: 30
+          duration: 6h
+        actions:
+          - consolidate_workloads:
+              strategy: bin-packing
+          - downscale_nodes:
+              min_nodes: 3
+          - notify_team:
+              channel: "#cost-alerts"
+              severity: low
+
+    remediation:
+      approval:
+        required_for:
+          - terminate_idle
+          - downscale_nodes
+        auto_approve:
+          - restart_pod
+          - scale_horizontally
+      
+      rollback:
+        enabled: true
+        timeout: 15m
+        metrics:
+          - error_rate
+          - latency
+          - availability

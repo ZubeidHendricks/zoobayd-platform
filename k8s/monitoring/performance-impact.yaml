@@ -1,0 +1,85 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: performance-impact
+  namespace: monitoring
+spec:
+  groups:
+  - name: performance.impact
+    rules:
+    - record: optimization_performance_impact
+      expr: |
+        (
+          rate(http_request_duration_seconds_sum[5m])
+          /
+          rate(http_request_duration_seconds_count[5m])
+        )
+        /
+        avg_over_time(
+          (
+            rate(http_request_duration_seconds_sum[5m])
+            /
+            rate(http_request_duration_seconds_count[5m])
+          )[1h]
+        )
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: impact-analyzer
+  namespace: monitoring
+spec:
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: analyzer
+            image: impact-analyzer:latest
+            env:
+            - name: ANALYSIS_CONFIG
+              value: "/etc/impact/config.yaml"
+            volumeMounts:
+            - name: impact-config
+              mountPath: /etc/impact
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: impact-config
+data:
+  config.yaml: |
+    impact_analysis:
+      metrics:
+        latency:
+          threshold_ms: 100
+          percentiles: [50, 95, 99]
+        throughput:
+          min_rps: 1000
+        error_rate:
+          max_percent: 0.1
+        resource_usage:
+          cpu_threshold: 80
+          memory_threshold: 85
+      
+      business_metrics:
+        - conversion_rate
+        - user_engagement
+        - revenue_per_user
+      
+      analysis_windows:
+        - 5m
+        - 1h
+        - 24h
+        - 7d
+      
+      reporting:
+        alerts:
+          - performance_degradation
+          - resource_constraint
+          - business_impact
+        visualizations:
+          - impact_heatmap
+          - trend_analysis
+          - correlation_matrix

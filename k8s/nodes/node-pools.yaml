@@ -1,0 +1,60 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: zoobayd-cluster
+  region: us-east-1
+
+managedNodeGroups:
+  - name: standard-workers
+    instanceType: c5.xlarge
+    minSize: 3
+    maxSize: 10
+    desiredCapacity: 3
+    volumeSize: 100
+    privateNetworking: true
+    labels:
+      role: worker
+    tags:
+      k8s.io/cluster-autoscaler/enabled: "true"
+
+  - name: cpu-optimized
+    instanceType: c6i.2xlarge
+    minSize: 2
+    maxSize: 8
+    desiredCapacity: 2
+    volumeSize: 100
+    privateNetworking: true
+    labels:
+      role: cpu-worker
+    taints:
+      - key: workload
+        value: cpu-intensive
+        effect: NoSchedule
+
+  - name: memory-optimized
+    instanceType: r6i.2xlarge
+    minSize: 2
+    maxSize: 6
+    desiredCapacity: 2
+    volumeSize: 200
+    privateNetworking: true
+    labels:
+      role: memory-worker
+    taints:
+      - key: workload
+        value: memory-intensive
+        effect: NoSchedule
+
+  - name: gpu-workers
+    instanceType: g4dn.xlarge
+    minSize: 0
+    maxSize: 4
+    desiredCapacity: 0
+    volumeSize: 150
+    privateNetworking: true
+    labels:
+      role: gpu-worker
+      accelerator: nvidia-tesla
+    taints:
+      - key: nvidia.com/gpu
+        effect: NoSchedule

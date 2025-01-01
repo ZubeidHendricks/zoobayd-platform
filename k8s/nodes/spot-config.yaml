@@ -1,0 +1,40 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: zoobayd-cluster
+  region: us-east-1
+
+managedNodeGroups:
+  - name: spot-workers
+    instanceTypes: ["c5.xlarge", "c5a.xlarge", "c5n.xlarge"]
+    spot: true
+    minSize: 2
+    maxSize: 20
+    desiredCapacity: 2
+    privateNetworking: true
+    labels:
+      node-type: spot
+    taints:
+      - key: instance-type
+        value: spot
+        effect: PreferNoSchedule
+    
+  - name: mixed-instance-spot
+    instanceTypes: ["r6i.xlarge", "r6a.xlarge", "r5.xlarge"]
+    spot: true
+    minSize: 1
+    maxSize: 10
+    desiredCapacity: 1
+    labels:
+      node-type: spot-memory
+    volumeSize: 100
+    privateNetworking: true
+    asgMetricsCollection:
+      - granularity: 1Minute
+        metrics:
+          - GroupMinSize
+          - GroupMaxSize
+          - GroupDesiredCapacity
+          - GroupInServiceInstances
+          - GroupPendingInstances
+          - GroupTerminatingInstances

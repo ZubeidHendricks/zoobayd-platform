@@ -1,0 +1,48 @@
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: default
+  namespace: velero
+spec:
+  provider: aws
+  objectStorage:
+    bucket: zoobayd-k8s-backup
+  config:
+    region: us-east-1
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-backup
+  namespace: velero
+spec:
+  schedule: "0 1 * * *"
+  template:
+    includedNamespaces:
+      - zoobayd
+    includedResources:
+      - deployments
+      - statefulsets
+      - configmaps
+      - secrets
+      - persistentvolumeclaims
+    storageLocation: default
+    ttl: 720h
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: hourly-db-backup
+  namespace: velero
+spec:
+  schedule: "0 * * * *"
+  template:
+    includedNamespaces:
+      - zoobayd
+    includedResources:
+      - persistentvolumeclaims
+    labelSelector:
+      matchLabels:
+        app: mongodb
+    storageLocation: default
+    ttl: 168h

@@ -1,0 +1,85 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "panels": [
+    {
+      "title": "Cost Trends",
+      "type": "graph",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "sum(aws_billing_estimated_charges) by (service)",
+          "legendFormat": "{{service}}"
+        }
+      ]
+    },
+    {
+      "title": "Resource Efficiency",
+      "type": "gauge",
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "avg(container_cpu_usage_seconds_total / container_cpu_limit)"
+        }
+      ]
+    },
+    {
+      "title": "Cost vs Performance Correlation",
+      "type": "heatmap",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "cost_vs_performance_correlation"
+        }
+      ]
+    },
+    {
+      "title": "Optimization Effectiveness",
+      "type": "stat",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "cost_reduction_effectiveness"
+        }
+      ]
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 27,
+  "style": "dark",
+  "templating": {
+    "list": [
+      {
+        "name": "timerange",
+        "type": "interval",
+        "query": "1h,6h,12h,1d,7d,30d,90d"
+      }
+    ]
+  }
+}

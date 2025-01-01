@@ -1,0 +1,31 @@
+{
+  "archiveEnabled": true,
+  "tracking": {
+    "gaID": "",
+    "trackErrors": true
+  },
+  "menu": [
+    {
+      "label": "About",
+      "url": "/about"
+    },
+    {
+      "label": "Documentation",
+      "url": "/docs"
+    }
+  ],
+  "search": {
+    "maxLookback": {
+      "label": "2 Days",
+      "value": "2d"
+    },
+    "maxLimit": 1500
+  },
+  "dependencies": {
+    "menuEnabled": true,
+    "dagMaxNumServices": 200
+  },
+  "deepDependencies": {
+    "menuEnabled": true
+  }
+}

@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: correlation-analyzer
+  namespace: monitoring
+spec:
+  template:
+    spec:
+      containers:
+      - name: analyzer
+        image: correlation-analyzer:latest
+        env:
+        - name: ANALYSIS_CONFIG
+          value: "/etc/analysis/config.yaml"
+        volumeMounts:
+        - name: analysis-config
+          mountPath: /etc/analysis
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: correlation-analysis-config
+data:
+  config.yaml: |
+    analysis:
+      metrics:
+        cost_related:
+          - aws_billing_estimated_charges
+          - resource_provisioning_cost
+          - spot_instance_savings
+        performance_related:
+          - container_cpu_usage_seconds_total
+          - container_memory_usage_bytes
+          - http_request_duration_seconds
+        business_related:
+          - request_count
+          - error_rate
+          - user_satisfaction_score
+
+      correlations:
+        - name: cost_vs_performance
+          metrics:
+            x: [aws_billing_estimated_charges]
+            y: [http_request_duration_seconds]
+          window: 24h
+          min_correlation: 0.7
+
+        - name: resource_vs_satisfaction
+          metrics:
+            x: [container_cpu_usage_seconds_total, container_memory_usage_bytes]
+            y: [user_satisfaction_score]
+          window: 7d
+          min_correlation: 0.6
+
+      statistical_tests:
+        - type: pearson
+        - type: spearman
+        - type: kendall
+
+      reporting:
+        frequency: 1h
+        threshold_alerts:
+          - high_correlation_alert:
+              threshold: 0.9
+              duration: 3h
+          - negative_correlation_alert:
+              threshold: -0.7
+              duration: 6h
+
+      visualization:
+        plots:
+          - scatter
+          - heatmap
+          - time_series
+        export_formats:
+          - png
+          - interactive_html

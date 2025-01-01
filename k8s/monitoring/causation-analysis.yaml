@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: causation-analyzer
+  namespace: monitoring
+spec:
+  template:
+    spec:
+      containers:
+      - name: analyzer
+        image: causation-analyzer:latest
+        env:
+        - name: GRANGER_CONFIG
+          value: "/etc/analysis/granger.yaml"
+        - name: CAUSAL_DISCOVERY
+          value: "/etc/analysis/causal.yaml"
+        volumeMounts:
+        - name: analysis-config
+          mountPath: /etc/analysis
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: causation-config
+data:
+  granger.yaml: |
+    granger_causality:
+      variables:
+        - cost_metrics
+        - performance_metrics
+        - resource_metrics
+      lag_order: [1, 6, 12, 24]
+      significance_level: 0.05
+      min_observations: 100
+  
+  causal.yaml: |
+    causal_discovery:
+      algorithms:
+        - pc_algorithm
+        - var_lingam
+        - notears
+      interventions:
+        - type: resource_change
+        - type: config_change
+        - type: load_change
+      validation:
+        cross_validation: true
+        holdout_ratio: 0.2

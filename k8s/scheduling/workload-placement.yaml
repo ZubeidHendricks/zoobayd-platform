@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoobayd-ml-service
+  namespace: zoobayd
+spec:
+  template:
+    spec:
+      nodeSelector:
+        node.kubernetes.io/instance-family: gpu
+        accelerator: nvidia-tesla
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zoobayd-mongodb
+  namespace: zoobayd
+spec:
+  template:
+    spec:
+      nodeSelector:
+        storage-type: high-iops
+      tolerations:
+      - key: storage-optimized
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: instance-type
+                operator: In
+                values:
+                - r6i.2xlarge
+                - r6i.4xlarge
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoobayd-analytics
+  namespace: zoobayd
+spec:
+  template:
+    spec:
+      nodeSelector:
+        node.kubernetes.io/instance-family: memory-optimized
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: failure-domain.beta.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: analytics
