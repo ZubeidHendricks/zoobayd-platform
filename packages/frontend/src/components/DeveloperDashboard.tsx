@@ -1,69 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { 
+  ContractType, 
+  BlockchainNetworkType 
+} from '../types/ContractTypes';
 
 interface Project {
   id: string;
   name: string;
-  blockchain: string;
-  status: 'draft' | 'deployed' | 'in-progress';
+  type: ContractType;
+  network: BlockchainNetworkType;
+  status: 'draft' | 'in_progress' | 'deployed';
+  securityScore?: number;
+  lastUpdated: Date;
 }
 
 const DeveloperDashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [activeView, setActiveView] = useState<'overview' | 'projects' | 'analytics'>('overview');
 
-  const templates = [
-    { name: 'NFT Collection', blockchain: 'Ethereum' },
-    { name: 'DeFi Staking', blockchain: 'Polygon' },
-    { name: 'Token Contract', blockchain: 'Binance Smart Chain' }
-  ];
-
-  const createNewProject = () => {
-    // Logic to create a new project
-    const newProject: Project = {
-      id: Date.now().toString(),
-      name: `New ${selectedTemplate} Project`,
-      blockchain: templates.find(t => t.name === selectedTemplate)?.blockchain || '',
-      status: 'draft'
+  useEffect(() => {
+    // Fetch user projects
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('/api/projects');
+        const data = await response.json();
+        setProjects(data);
+      } catch (error) {
+        console.error('Failed to fetch projects', error);
+      }
     };
 
-    setProjects([...projects, newProject]);
-  };
+    fetchProjects();
+  }, []);
+
+  const renderOverview = () => (
+    <div className="dashboard-overview">
+      <div className="quick-stats">
+        <div className="stat-card">
+          <h3>Total Projects</h3>
+          <p>{projects.length}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Deployed Contracts</h3>
+          <p>{projects.filter(p => p.status === 'deployed').length}</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderProjects = () => (
+    <div className="projects-list">
+      {projects.map(project => (
+        <div key={project.id} className="project-card">
+          <div className="project-header">
+            <h3>{project.name}</h3>
+            <span className={`status ${project.status}`}>
+              {project.status}
+            </span>
+          </div>
+          <div className="project-details">
+            <p>Type: {project.type}</p>
+            <p>Network: {project.network}</p>
+            {project.securityScore && (
+              <div className="security-score">
+                Security Score: {project.securityScore.toFixed(2)}%
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderAnalytics = () => (
+    <div className="analytics-view">
+      <h2>Platform Analytics</h2>
+      {/* Placeholder for more detailed analytics */}
+    </div>
+  );
 
   return (
     <div className="developer-dashboard">
-      <h1>Zoobayd Developer Platform</h1>
-      
-      <section className="project-creation">
-        <h2>Start a New Project</h2>
-        <select 
-          value={selectedTemplate}
-          onChange={(e) => setSelectedTemplate(e.target.value)}
-        >
-          <option value="">Select Project Template</option>
-          {templates.map(template => (
-            <option key={template.name} value={template.name}>
-              {template.name} ({template.blockchain})
-            </option>
-          ))}
-        </select>
+      <nav className="dashboard-nav">
         <button 
-          onClick={createNewProject}
-          disabled={!selectedTemplate}
+          className={activeView === 'overview' ? 'active' : ''}
+          onClick={() => setActiveView('overview')}
         >
-          Create Project
+          Overview
         </button>
-      </section>
+        <button 
+          className={activeView === 'projects' ? 'active' : ''}
+          onClick={() => setActiveView('projects')}
+        >
+          Projects
+        </button>
+        <button 
+          className={activeView === 'analytics' ? 'active' : ''}
+          onClick={() => setActiveView('analytics')}
+        >
+          Analytics
+        </button>
+      </nav>
 
-      <section className="project-list">
-        <h2>Your Projects</h2>
-        {projects.map(project => (
-          <div key={project.id} className="project-card">
-            <h3>{project.name}</h3>
-            <p>Blockchain: {project.blockchain}</p>
-            <p>Status: {project.status}</p>
-          </div>
-        ))}
-      </section>
+      <div className="dashboard-content">
+        {activeView === 'overview' && renderOverview()}
+        {activeView === 'projects' && renderProjects()}
+        {activeView === 'analytics' && renderAnalytics()}
+      </div>
     </div>
   );
 };
