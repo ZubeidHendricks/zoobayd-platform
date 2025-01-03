@@ -1,41 +1,32 @@
-<<<<<<< HEAD
-version: '3'
-services:
-  # Logging configuration placeholder
-=======
 version: '3.8'
-
 services:
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.14.0
+    volumes:
+      - ./monitoring/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers
+    user: root
+    networks:
+      - zoobayd-network
+
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
     ports:
       - "9200:9200"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - zoobayd-network
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.8.0
+    image: docker.elastic.co/kibana/kibana:7.14.0
     ports:
       - "5601:5601"
     depends_on:
       - elasticsearch
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - zoobayd-network
 
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:8.8.0
-    user: root
-    volumes:
-      - ./monitoring/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    depends_on:
-      - elasticsearch
-      - kibana
-
-volumes:
-  elasticsearch-data:
->>>>>>> 5d12a47 (Add advanced security, logging, error handling, performance monitoring, and configuration management)
+networks:
+  zoobayd-network:
+    driver: bridge
