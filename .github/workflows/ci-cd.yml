@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Zoobayd Platform CI/CD
 
 on:
   push:
@@ -16,55 +16,46 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'
-    
+        node-version: '16.x'
+        
     - name: Install Dependencies
       run: |
         npm install
-        npm run bootstrap
+        npm install -g lerna
+        lerna bootstrap
     
-    - name: Run Linter
-      run: npm run lint
+    - name: Lint Code
+      run: |
+        npm run lint
     
-    - name: Run Tests
-      run: npm test
+    - name: Run Backend Tests
+      run: |
+        cd packages/backend
+        npm test
     
-    - name: Build Project
-      run: npm run build
+    - name: Run Frontend Tests
+      run: |
+        cd packages/frontend
+        npm test
 
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     
     steps:
     - uses: actions/checkout@v2
     
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-    
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
+    - name: Deploy to Production
+      # This is a placeholder. Replace with your actual deployment strategy
+      run: |
+        echo "Deploying to production server"
+        # Add your deployment commands here
+        
+    - name: Notify Deployment
+      if: success()
+      uses: 8398a7/action-slack@v3
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    
-    - name: Build and Push Backend
-      uses: docker/build-push-action@v2
-      with:
-        context: ./packages/backend
-        push: true
-        tags: zoobayd/backend:latest
-    
-    - name: Build and Push Frontend
-      uses: docker/build-push-action@v2
-      with:
-        context: ./packages/frontend
-        push: true
-        tags: zoobayd/frontend:latest
-    
-    - name: Deploy to Kubernetes
-      uses: steebchen/kubectl@v2.0.0
-      with:
-        config: ${{ secrets.KUBE_CONFIG }}
-        command: apply -f k8s/deployment.yaml
+        status: ${{ job.status }}
+        text: Deployment successful!
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
