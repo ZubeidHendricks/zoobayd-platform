@@ -1,19 +1,23 @@
-<<<<<<< HEAD
-version: '3'
-services:
-  # Tracing configuration placeholder
-=======
 version: '3.8'
-
 services:
-  jaeger:
-    image: jaegertracing/all-in-one:1.35
+  otel-collector:
+    image: otel/opentelemetry-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./monitoring/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "14268:14268"
-      - "16686:16686"
-    environment:
-      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
-      - COLLECTOR_OTLP_ENABLED=true
->>>>>>> 5d12a47 (Add advanced security, logging, error handling, performance monitoring, and configuration management)
+      - "4317:4317"  # OTLP gRPC receiver
+      - "4318:4318"  # OTLP HTTP receiver
+    networks:
+      - zoobayd-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - zoobayd-network
+
+networks:
+  zoobayd-network:
+    driver: bridge
