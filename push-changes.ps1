@@ -1,7 +1,7 @@
 function Push-ZoobayChanges {
     param(
-        [string]$CommitMessage = "Comprehensive platform update: Advanced services implementation",
-        [string]$BranchName = "feature/advanced-services"
+        [string]$CommitMessage = "Comprehensive platform update: Backend infrastructure, authentication, and service integration",
+        [string]$BranchName = "feature/backend-infrastructure"
     )
 
     try {
