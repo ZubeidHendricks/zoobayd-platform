@@ -1,0 +1,95 @@
+name: Zoobayd Platform Production Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    # Setup Node.js
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+        
+    # Cache node modules
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    
+    # Install dependencies
+    - name: Install Dependencies
+      run: |
+        npm install
+        npm install -g lerna
+        lerna bootstrap
+    
+    # Run linters
+    - name: Lint Code
+      run: npm run lint
+    
+    # Run tests
+    - name: Run Tests
+      run: npm test
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    # Setup Docker Buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    # Login to GitHub Container Registry
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    # Build and Push Backend
+    - name: Build and Push Backend
+      uses: docker/build-push-action@v3
+      with:
+        context: ./packages/backend
+        push: true
+        tags: ghcr.io/${{ github.repository }}/backend:latest
+    
+    # Build and Push Frontend
+    - name: Build and Push Frontend
+      uses: docker/build-push-action@v3
+      with:
+        context: ./packages/frontend
+        push: true
+        tags: ghcr.io/${{ github.repository }}/frontend:latest
+    
+    # Deploy to Kubernetes (placeholder for actual deployment script)
+    - name: Deploy to Kubernetes
+      run: |
+        echo "Deploying to Kubernetes cluster"
+        # Add your deployment commands here
+    
+    # Notify deployment
+    - name: Notify Deployment
+      uses: 8398a7/action-slack@v3
+      if: success()
+      with:
+        status: ${{ job.status }}
+        text: Deployment Successful! 🚀
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
