@@ -1,6 +1,7 @@
 {
     "version": 2,
     "buildCommand": "npm run build:frontend",
+    "installCommand": "npm install",
     "outputDirectory": "packages/frontend/build",
     "framework": "create-react-app",
     "routes": [
