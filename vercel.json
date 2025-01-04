@@ -7,23 +7,15 @@
             "config": { "distDir": "build" }
         },
         {
-            "src": "packages/backend/dist/index.js",
+            "src": "packages/backend/dist/index.js", 
             "use": "@vercel/node"
         }
     ],
     "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "packages/backend/dist/index.js"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "packages/frontend/build/index.html"
-        }
+        { "src": "/api/(.*)", "dest": "packages/backend/dist/index.js" },
+        { "src": "/(.*)", "dest": "packages/frontend/build/index.html" }
     ],
     "env": {
-        "MONGODB_URI": "@zoobayd_mongodb_uri",
-        "JWT_SECRET": "@zoobayd_jwt_secret",
-        "OPENAI_API_KEY": "@zoobayd_openai_api_key"
+        "MONGODB_URI": "@zoobayd_mongodb_uri"
     }
 }

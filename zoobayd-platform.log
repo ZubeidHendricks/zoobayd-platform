@@ -1,0 +1,10 @@
+[2025-01-03 23:56:25] [INFO] Initializing environment configuration...
+[2025-01-03 23:56:25] [INFO] Environment file created. Please update with your specific configurations.
+[2025-01-03 23:56:25] [WARNING] WARNING: kubectl is not installed.
+[2025-01-03 23:56:25] [WARNING] WARNING: node is not installed.
+[2025-01-03 23:56:25] [WARNING] WARNING: docker is not installed.
+[2025-01-03 23:56:25] [WARNING] WARNING: npm is not installed.
+[2025-01-03 23:56:29] [INFO] Installing project dependencies...
+[2025-01-03 23:56:30] [ERROR] Dependency installation failed: The term 'lerna' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+[2025-01-03 23:56:46] [ERROR] Failed to start services: The term 'docker-compose' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+[2025-01-03 23:56:55] [INFO] Starting full development environment...

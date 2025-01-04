@@ -19,6 +19,10 @@ function Deploy-ZoobayPlatform {
         # Ensure user is logged in to Vercel
         vercel login
 
+        # Set MongoDB URI secret
+        Write-Host "Setting MongoDB URI secret..." -ForegroundColor Cyan
+        vercel secrets add zoobayd_mongodb_uri "mongodb+srv://zubeidhendricks:Zaza786*@cluster0.vzgtq.mongodb.net/zoobayd?retryWrites=true&w=majority&appName=Cluster0"
+
         # Determine deployment type
         $deploymentFlag = if ($Production) { "--prod" } elseif ($Preview) { "" } else { "" }
 
@@ -32,7 +36,7 @@ function Deploy-ZoobayPlatform {
 
         # Deploy to Vercel
         Write-Host "Deploying to Vercel..." -ForegroundColor Green
-        vercel $deploymentFlag
+        vercel $deploymentFlag --env MONGODB_URI=@zoobayd_mongodb_uri
 
         # Success message
         if ($Production) {
@@ -52,7 +56,4 @@ function Deploy-ZoobayPlatform {
 }
 
 # Run the deployment function
-# Uncomment the appropriate line based on your deployment need
-# Deploy-ZoobayPlatform        # Standard deployment
-# Deploy-ZoobayPlatform -Preview  # Preview deployment
-Deploy-ZoobayPlatform -Production  # Production deployment
+Deploy-ZoobayPlatform -Production
