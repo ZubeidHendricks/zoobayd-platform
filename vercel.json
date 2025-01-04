@@ -20,8 +20,5 @@
     "routes": [
         { "src": "/api/(.*)", "dest": "packages/backend/dist/index.js" },
         { "src": "/(.*)", "dest": "packages/frontend/build/index.html" }
-    ],
-    "env": {
-        "MONGODB_URI": "@zoobayd_mongodb_uri"
-    }
+    ]
 }
