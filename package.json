@@ -3,8 +3,17 @@
     "version": "0.2.0",
     "private": true,
     "scripts": {
+<<<<<<< HEAD
         "build": "cd packages/frontend && npm run build",
         "start": "cd packages/frontend && npm start"
+=======
+        "dev": "npm run dev --workspace=@zoobayd/frontend",
+        "build": "npm run build --workspaces",
+        "start": "npm run start --workspace=@zoobayd/backend",
+        "test": "npm run test --workspaces",
+        "lint": "npm run lint --workspaces",
+        "vercel-build": "npm run build --workspace=@zoobayd/frontend"
+>>>>>>> origin/main
     },
     "engines": {
         "node": "18.x"

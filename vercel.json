@@ -1,6 +1,19 @@
 {
     "version": 2,
+<<<<<<< HEAD
     "buildCommand": "npm run build",
     "outputDirectory": "packages/frontend/build",
     "framework": "create-react-app"
+=======
+    "builds": [
+        {
+            "src": "packages/frontend/package.json",
+            "use": "@vercel/static-build",
+            "config": { "distDir": "build" }
+        }
+    ],
+    "routes": [
+        { "src": "/(.*)", "dest": "packages/frontend/build/index.html" }
+    ]
+>>>>>>> origin/main
 }
