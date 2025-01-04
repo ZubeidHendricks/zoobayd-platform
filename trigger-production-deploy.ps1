@@ -20,23 +20,13 @@ function Trigger-ProductionDeploy {
         Write-Host "Pulling latest changes..." -ForegroundColor Yellow
         git pull origin main
 
-        # Stage all changes (if any)
-        Write-Host "Staging changes..." -ForegroundColor Yellow
-        git add .
+        # Add MongoDB URI secret to Vercel
+        Write-Host "Setting up Vercel MongoDB URI secret..." -ForegroundColor Cyan
+        vercel secrets add zoobayd_mongodb_uri "mongodb+srv://zubeidhendricks:Zaza786*@cluster0.vzgtq.mongodb.net/zoobayd?retryWrites=true&w=majority&appName=Cluster0"
 
-        # Commit changes
-        Write-Host "Committing changes..." -ForegroundColor Yellow
-        git commit -m "$CommitMessage" --allow-empty
-
-        # Push to main branch
-        Write-Host "Pushing to main branch..." -ForegroundColor Green
-        git push origin main
-
-        # Trigger Vercel deployment (if Vercel CLI is available)
-        if (Get-Command vercel -ErrorAction SilentlyContinue) {
-            Write-Host "Triggering Vercel deployment..." -ForegroundColor Cyan
-            vercel --prod
-        }
+        # Trigger Vercel deployment
+        Write-Host "Triggering Vercel deployment..." -ForegroundColor Green
+        vercel --prod --env MONGODB_URI=@zoobayd_mongodb_uri
 
         Write-Host "Production deployment triggered successfully!" -ForegroundColor Green
 
