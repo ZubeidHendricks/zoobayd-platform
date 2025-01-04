@@ -6,19 +6,22 @@
             "use": "@vercel/static-build",
             "config": { 
                 "distDir": "build",
-                "nodeVersion": "18.x"
+                "nodeVersion": "22.x"
             }
         },
         {
-            "src": "packages/backend/dist/index.js", 
+            "src": "packages/backend/dist/index.js",
             "use": "@vercel/node",
             "config": {
-                "nodeVersion": "18.x"
+                "nodeVersion": "22.x"
             }
         }
     ],
     "routes": [
         { "src": "/api/(.*)", "dest": "packages/backend/dist/index.js" },
         { "src": "/(.*)", "dest": "packages/frontend/build/index.html" }
-    ]
+    ],
+    "env": {
+        "MONGODB_URI": "@zoobayd_mongodb_uri"
+    }
 }
