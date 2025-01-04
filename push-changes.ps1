@@ -1,37 +1,32 @@
+# Git Push Script for Zoobayd Platform
+
+# Function to push changes
 function Push-ZoobayChanges {
     param(
-        [string]$CommitMessage = "Comprehensive platform update: Backend infrastructure, authentication, and service integration",
-        [string]$BranchName = "feature/backend-infrastructure"
+        [string]$BranchName = "feature/backend-infrastructure",
+        [string]$CommitMessage = "Add marketplace service and components for contract template marketplace"
     )
 
     try {
-        # Change to the repository directory
+        # Ensure we're in the correct directory
         Set-Location "C:\github_repository\zoobayd-platform"
 
-        # Configure git user
-        git config --global user.name "Zoobayd Platform Bot"
-        git config --global user.email "support@zoobayd.com"
-
-        # Create a new branch
+        # Create and switch to branch
         git checkout -b $BranchName
 
         # Stage all changes
         git add .
 
         # Commit changes
-        git commit -m "$CommitMessage"
+        git commit -m $CommitMessage
 
         # Push to remote repository
         git push -u origin $BranchName
 
         Write-Host "Successfully pushed changes to $BranchName" -ForegroundColor Green
-
-        # Optional: Create a pull request (you would typically do this on GitHub)
-        Write-Host "Please create a pull request on GitHub to merge these changes" -ForegroundColor Yellow
     }
     catch {
         Write-Host "Error pushing changes: $_" -ForegroundColor Red
-        throw
     }
 }
 
