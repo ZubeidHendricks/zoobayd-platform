@@ -1,13 +1,26 @@
-FROM node:18-alpine
+FROM node:16-alpine
 
-WORKDIR /app
+# Create app directory
+WORKDIR /usr/src/app
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+# Install system dependencies
+RUN apk add --no-cache git
 
-COPY . .
-RUN yarn build
+# Copy package files
+COPY package*.json ./
+COPY tsconfig.json ./
 
-EXPOSE 3000
+# Install dependencies
+RUN npm install
 
-CMD ["yarn", "start"]
+# Copy source code
+COPY src ./src
+
+# Build the application
+RUN npm run build
+
+# Expose port
+EXPOSE 3001
+
+# Start the server
+CMD ["npm", "start"]
