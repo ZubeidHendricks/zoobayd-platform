@@ -1,5 +1,10 @@
 {
     "version": 2,
+<<<<<<< HEAD
+    "buildCommand": "npm run build",
+    "outputDirectory": "packages/frontend/build",
+    "framework": "create-react-app"
+=======
     "builds": [
         {
             "src": "packages/frontend/package.json",
@@ -10,4 +15,5 @@
     "routes": [
         { "src": "/(.*)", "dest": "packages/frontend/build/index.html" }
     ]
+>>>>>>> origin/main
 }
