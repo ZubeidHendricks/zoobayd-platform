@@ -3,8 +3,8 @@
 # Function to push changes
 function Push-ZoobayChanges {
     param(
-        [string]$BranchName = "feature/marketplace-components",
-        [string]$CommitMessage = "Add marketplace search and create template components"
+        [string]$BranchName = "feature/collaboration-system",
+        [string]$CommitMessage = "Add collaborative contract development system with real-time editing and AI insights"
     )
 
     try {
