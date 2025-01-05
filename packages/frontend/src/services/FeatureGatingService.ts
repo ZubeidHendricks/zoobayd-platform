@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export interface Feature {
   id: string;
   name: string;
@@ -14,13 +12,18 @@ class FeatureGatingService {
 
   async initialize(): Promise<void> {
     try {
-      const response = await axios.get<Feature[]>(`${this.baseURL}/features`, {
+      const response = await fetch(`${this.baseURL}/features`, {
         headers: {
           'Authorization': `Bearer ${this.getAuthToken()}`
         }
       });
 
-      response.data.forEach(feature => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const features: Feature[] = await response.json();
+      features.forEach(feature => {
         this.features.set(feature.id, feature);
       });
     } catch (error) {
@@ -59,7 +62,6 @@ class FeatureGatingService {
   }
 
   private getUserId(): string {
-    // Get user ID from authentication context or generate a stable one
     return localStorage.getItem('user_id') || 'anonymous';
   }
 
