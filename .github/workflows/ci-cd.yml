@@ -20,14 +20,10 @@ jobs:
         cache: 'npm'
         
     - name: Install Dependencies
-      run: |
-        cd packages/frontend
-        npm install
+      run: npm run install-deps
     
     - name: Build Frontend
-      run: |
-        cd packages/frontend
-        npm run build
+      run: npm run build
 
   deploy:
     needs: build
