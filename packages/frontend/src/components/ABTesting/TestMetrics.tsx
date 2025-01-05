@@ -1,38 +1,21 @@
 import React from 'react';
-import { LineChart, BarChart } from '../ui/Charts';
-import { Card } from '../ui/Card';
 
-export const TestMetrics: React.FC = () => {
-  const conversionData = [
-    { name: 'Variant A', value: 12.5 },
-    { name: 'Variant B', value: 15.2 }
-  ];
-
-  const timeSeriesData = [
-    { date: '2024-01-01', variantA: 10, variantB: 11 },
-    { date: '2024-01-02', variantA: 11, variantB: 13 },
-    { date: '2024-01-03', variantA: 12, variantB: 14 }
-  ];
-
-  return (
-    <Card className="p-4 space-y-6">
-      <div>
-        <h3 className="text-lg font-medium mb-2">Conversion Rates</h3>
-        <BarChart data={conversionData} />
+export const TestMetrics: React.FC = () => (
+  <div className="bg-white shadow rounded-lg p-6">
+    <h3 className="text-lg font-semibold mb-4">Test Metrics</h3>
+    <div className="space-y-4">
+      <div className="p-4 bg-gray-50 rounded">
+        <div className="text-sm text-gray-600">Active Tests</div>
+        <div className="text-2xl font-bold">1</div>
       </div>
-
-      <div>
-        <h3 className="text-lg font-medium mb-2">Usage Over Time</h3>
-        <LineChart data={timeSeriesData} />
+      <div className="p-4 bg-gray-50 rounded">
+        <div className="text-sm text-gray-600">Total Participants</div>
+        <div className="text-2xl font-bold">1,234</div>
       </div>
-
-      <div>
-        <h3 className="text-lg font-medium mb-2">Statistical Significance</h3>
-        <div className="bg-green-50 p-3 rounded">
-          <p className="text-green-700">95% confidence level reached</p>
-          <p className="text-sm text-green-600">Variant B shows 21.6% improvement</p>
-        </div>
+      <div className="p-4 bg-gray-50 rounded">
+        <div className="text-sm text-gray-600">Average Duration</div>
+        <div className="text-2xl font-bold">14 days</div>
       </div>
-    </Card>
-  );
-};
+    </div>
+  </div>
+);
