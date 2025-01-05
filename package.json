@@ -3,10 +3,10 @@
   "version": "0.2.0",
   "description": "AI-Powered Blockchain Development Platform",
   "private": true,
-  "engines": {
-    "node": ">=16.0.0"
-  },
   "scripts": {
-    "build:frontend": "cd packages/frontend && npm install && npm run build"
+    "install": "cd packages/frontend && npm install",
+    "build": "cd packages/frontend && npm run build",
+    "start": "cd packages/frontend && npm start",
+    "dev": "cd packages/frontend && npm run dev"
   }
 }
