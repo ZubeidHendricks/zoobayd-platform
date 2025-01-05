@@ -8,7 +8,7 @@ const App = () => {
         <header className="App-header">
           <h1>Zoobayd Platform</h1>
         </header>
-        <main>
+        <main className="container mx-auto p-4">
           <Routes>
             <Route path="/" element={<div>Welcome to Zoobayd Platform</div>} />
           </Routes>
