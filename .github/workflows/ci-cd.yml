@@ -20,17 +20,14 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16.x'
-        cache: 'npm'
     
-    - name: Install Dependencies
+    - name: Install Frontend Dependencies
       run: |
-        echo "Installing frontend dependencies..."
+        rm -rf node_modules package-lock.json
         npm install
     
     - name: Build Frontend
-      run: |
-        echo "Building frontend..."
-        npm run build
+      run: npm run build
 
   deploy:
     needs: build
