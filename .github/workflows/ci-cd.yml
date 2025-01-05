@@ -2,7 +2,7 @@ name: Zoobayd Platform CI/CD
 
 on:
   push:
-    branches: [ main, fix/consolidated-frontend ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -20,22 +20,17 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16.x'
-    
-    - name: Cache Dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          packages/frontend/node_modules
-          ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('packages/frontend/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        cache: 'npm'
     
     - name: Install Dependencies
-      run: npm install
+      run: |
+        echo "Installing frontend dependencies..."
+        npm install
     
     - name: Build Frontend
-      run: npm run build
+      run: |
+        echo "Building frontend..."
+        npm run build
 
   deploy:
     needs: build
