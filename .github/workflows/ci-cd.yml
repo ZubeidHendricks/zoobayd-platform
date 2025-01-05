@@ -18,10 +18,13 @@ jobs:
       with:
         node-version: '16.x'
         cache: 'npm'
-        
-    - name: Install Dependencies
+        cache-dependency-path: './packages/frontend/package-lock.json'
+    
+    - name: Clean Install
       run: |
         cd packages/frontend
+        rm -rf node_modules
+        rm -f package-lock.json
         npm install
     
     - name: Build Frontend
