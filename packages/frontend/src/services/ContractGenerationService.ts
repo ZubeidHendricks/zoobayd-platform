@@ -76,26 +76,20 @@ class ContractGenerationService {
   }
 
   private getAuthToken(): string {
-    // Retrieve authentication token from localStorage or state management
     return localStorage.getItem('auth_token') || '';
   }
 
   private handleError(error: any): void {
     if (axios.isAxiosError(error)) {
-      // Handle specific axios error types
       if (error.response) {
-        // The request was made and the server responded with a status code
         console.error('Error response:', error.response.data);
         console.error('Status code:', error.response.status);
       } else if (error.request) {
-        // The request was made but no response was received
         console.error('No response received:', error.request);
       } else {
-        // Something happened in setting up the request
         console.error('Error setting up request:', error.message);
       }
     } else {
-      // Handle non-axios errors
       console.error('Unexpected error:', error);
     }
   }
