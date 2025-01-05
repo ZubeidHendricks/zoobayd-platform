@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Dashboard } from './components/Dashboard';
 
 const App = () => {
   return (
@@ -11,7 +10,12 @@ const App = () => {
         </header>
         <main className="container mx-auto p-4">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-4">Welcome to Zoobayd Platform</h2>
+                <p>Your AI-Powered Blockchain Development Platform</p>
+              </div>
+            } />
           </Routes>
         </main>
       </div>
