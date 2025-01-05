@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./packages/frontend
     
     steps:
     - uses: actions/checkout@v3
@@ -28,17 +31,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
     
-    - name: Clean Install
-      run: |
-        cd packages/frontend
-        rm -rf node_modules
-        rm -f package-lock.json
-        npm install
+    - name: Install Dependencies
+      run: npm install
     
     - name: Build Frontend
-      run: |
-        cd packages/frontend
-        npm run build
+      run: npm run build
 
   deploy:
     needs: build
