@@ -1,7 +1,2 @@
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api'
-});
-
-export default api;
+// API configuration will be added later
+export const API_URL = process.env.REACT_APP_API_URL || '/api';
