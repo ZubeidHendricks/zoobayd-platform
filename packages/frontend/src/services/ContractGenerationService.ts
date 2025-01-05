@@ -1,6 +1,4 @@
-import axios from 'axios';
 import { 
-  AIProvider, 
   BlockchainNetwork, 
   ContractGenerationRequest 
 } from '../types/ContractTypes';
@@ -18,18 +16,20 @@ class ContractGenerationService {
 
   async generateContract(request: ContractGenerationRequest): Promise<GeneratedContractResponse> {
     try {
-      const response = await axios.post<GeneratedContractResponse>(
-        `${this.baseURL}/contracts/generate`, 
-        request,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.getAuthToken()}`
-          }
-        }
-      );
+      const response = await fetch(`${this.baseURL}/contracts/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        },
+        body: JSON.stringify(request)
+      });
 
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -38,14 +38,17 @@ class ContractGenerationService {
 
   async downloadContract(contractId: string): Promise<Blob> {
     try {
-      const response = await axios.get(`${this.baseURL}/contracts/${contractId}/download`, {
+      const response = await fetch(`${this.baseURL}/contracts/${contractId}/download`, {
         headers: {
           'Authorization': `Bearer ${this.getAuthToken()}`
-        },
-        responseType: 'blob'
+        }
       });
 
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.blob();
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -57,18 +60,20 @@ class ContractGenerationService {
     recommendations: string[];
   }> {
     try {
-      const response = await axios.post(
-        `${this.baseURL}/contracts/analyze`, 
-        { sourceCode, blockchain },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.getAuthToken()}`
-          }
-        }
-      );
+      const response = await fetch(`${this.baseURL}/contracts/analyze`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        },
+        body: JSON.stringify({ sourceCode, blockchain })
+      });
 
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -76,26 +81,13 @@ class ContractGenerationService {
   }
 
   private getAuthToken(): string {
-    // Retrieve authentication token from localStorage or state management
     return localStorage.getItem('auth_token') || '';
   }
 
   private handleError(error: any): void {
-    if (axios.isAxiosError(error)) {
-      // Handle specific axios error types
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        console.error('Error response:', error.response.data);
-        console.error('Status code:', error.response.status);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error('No response received:', error.request);
-      } else {
-        // Something happened in setting up the request
-        console.error('Error setting up request:', error.message);
-      }
+    if (error instanceof Error) {
+      console.error('Error:', error.message);
     } else {
-      // Handle non-axios errors
       console.error('Unexpected error:', error);
     }
   }

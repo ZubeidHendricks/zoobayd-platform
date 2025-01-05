@@ -1,46 +1,83 @@
-// Feature Gating Service
-// Comprehensive tier-based feature management system
-
-import { PRICING_TIERS } from '../config/PricingTiers';
+export interface Feature {
+  id: string;
+  name: string;
+  status: 'enabled' | 'disabled' | 'beta';
+  rolloutPercentage?: number;
+  metadata?: Record<string, any>;
+}
 
 class FeatureGatingService {
-  // Check if a feature is accessible
-  canAccessFeature(user, featureName) {
-    const tier = user.subscriptionTier || 'free';
-    const tierConfig = PRICING_TIERS[tier];
-    
-    return tierConfig.features[featureName]?.allowed || false;
+  private baseURL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
+  private features: Map<string, Feature> = new Map();
+
+  async initialize(): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseURL}/features`, {
+        headers: {
+          'Authorization': `Bearer ${this.getAuthToken()}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const features: Feature[] = await response.json();
+      features.forEach(feature => {
+        this.features.set(feature.id, feature);
+      });
+    } catch (error) {
+      console.error('Failed to initialize feature flags:', error);
+      throw error;
+    }
   }
 
-  // Get feature limitations
-  getFeatureLimitations(user, featureName) {
-    const tier = user.subscriptionTier || 'free';
-    const tierConfig = PRICING_TIERS[tier];
-    
-    return {
-      limit: tierConfig.features[featureName]?.limitPerMonth,
-      complexity: tierConfig.features[featureName]?.complexity,
-      supportedNetworks: tierConfig.features[featureName]?.supportedNetworks
-    };
+  isFeatureEnabled(featureId: string): boolean {
+    const feature = this.features.get(featureId);
+    if (!feature) {
+      return false;
+    }
+
+    if (feature.status === 'disabled') {
+      return false;
+    }
+
+    if (feature.status === 'enabled') {
+      return true;
+    }
+
+    // Handle beta features with rollout percentage
+    if (feature.status === 'beta' && feature.rolloutPercentage) {
+      const userRolloutValue = this.getUserRolloutValue(featureId);
+      return userRolloutValue <= feature.rolloutPercentage;
+    }
+
+    return false;
   }
 
-  // Check if user has reached feature limit
-  hasReachedFeatureLimit(user, featureName) {
-    const limitations = this.getFeatureLimitations(user, featureName);
-    
-    if (limitations.limit === 'unlimited') return false;
-    
-    // Track user's usage (would be implemented with database tracking)
-    const currentUsage = this.getCurrentUsage(user, featureName);
-    
-    return currentUsage >= limitations.limit;
+  private getUserRolloutValue(featureId: string): number {
+    const userId = this.getUserId();
+    const hash = this.hashString(`${userId}-${featureId}`);
+    return (hash % 100) + 1; // Returns 1-100
   }
 
-  // Placeholder for usage tracking
-  private getCurrentUsage(user, featureName) {
-    // This would be implemented with actual usage tracking
-    return 0;
+  private getUserId(): string {
+    return localStorage.getItem('user_id') || 'anonymous';
+  }
+
+  private getAuthToken(): string {
+    return localStorage.getItem('auth_token') || '';
+  }
+
+  private hashString(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash);
   }
 }
 
-export default FeatureGatingService;
+export default new FeatureGatingService();
