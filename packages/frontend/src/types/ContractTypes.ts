@@ -1,7 +1,9 @@
 export enum AIProvider {
-  OPENAI = 'openai',
-  GOOGLE = 'google',
-  ANTHROPIC = 'anthropic'
+  GPT4 = 'gpt4',
+  CLAUDE = 'claude',
+  PALM = 'palm',
+  CUSTOM = 'custom',
+  OPENAI = 'openai'
 }
 
 export enum BlockchainNetwork {

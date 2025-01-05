@@ -2,60 +2,53 @@ name: Zoobayd Platform CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, fix/consolidated-frontend ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./packages/frontend
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     
     - name: Use Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: '16.x'
-        
+    
+    - name: Cache Dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          packages/frontend/node_modules
+          ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('packages/frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    
     - name: Install Dependencies
-      run: |
-        npm install
-        npm install -g lerna
-        lerna bootstrap
+      run: npm install
     
-    - name: Lint Code
-      run: |
-        npm run lint
-    
-    - name: Run Backend Tests
-      run: |
-        cd packages/backend
-        npm test
-    
-    - name: Run Frontend Tests
-      run: |
-        cd packages/frontend
-        npm test
+    - name: Build Frontend
+      run: npm run build
 
   deploy:
-    needs: build-and-test
+    needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     
-    - name: Deploy to Production
-      # This is a placeholder. Replace with your actual deployment strategy
-      run: |
-        echo "Deploying to production server"
-        # Add your deployment commands here
-        
-    - name: Notify Deployment
-      if: success()
-      uses: 8398a7/action-slack@v3
+    - name: Deploy to Vercel
+      uses: amondnet/vercel-action@v20
       with:
-        status: ${{ job.status }}
-        text: Deployment successful!
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: ./packages/frontend
