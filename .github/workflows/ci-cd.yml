@@ -39,7 +39,5 @@ jobs:
     - name: Build Frontend
       run: npm run build
 
-    - name: Deploy to AWS
-      run: |
-        aws s3 sync build/ s3://zoobayd-platform/
-        aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"
+    - name: Deploy to S3
+      run: aws s3 sync build/ s3://zoobayd-platform/ --delete
