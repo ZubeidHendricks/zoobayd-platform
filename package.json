@@ -4,9 +4,8 @@
   "description": "AI-Powered Blockchain Development Platform",
   "private": true,
   "scripts": {
-    "install": "cd packages/frontend && npm install",
-    "build": "cd packages/frontend && npm run build",
-    "start": "cd packages/frontend && npm run start",
-    "dev": "cd packages/frontend && npm run start"
+    "start": "cd packages/frontend && npm start",
+    "build": "cd packages/frontend && npm install && npm run build",
+    "dev": "cd packages/frontend && npm start"
   }
 }
