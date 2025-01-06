@@ -27,11 +27,9 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16.x'
-        cache: 'npm'
-        cache-dependency-path: '**/package-lock.json'
     
-    - name: Clean Install
-      run: npm ci
+    - name: Install Dependencies
+      run: npm install
     
     - name: Build Frontend
       run: npm run build
