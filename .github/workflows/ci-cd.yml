@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,12 +16,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Configure AWS Credentials
+    - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
+        aws-region: us-east-1
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
     
     - name: Use Node.js
       uses: actions/setup-node@v3
@@ -35,13 +31,10 @@ jobs:
         cache-dependency-path: '**/package-lock.json'
     
     - name: Clean Install
-      run: |
-        npm ci
+      run: npm ci
     
     - name: Build Frontend
-      run: |
-        npm run build
+      run: npm run build
 
     - name: Deploy to S3
-      run: |
-        aws s3 sync build/ s3://zoobayd-platform/ --delete
+      run: aws s3 sync build/ s3://zoobayd-platform/ --delete
