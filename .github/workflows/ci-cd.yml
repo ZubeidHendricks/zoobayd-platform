@@ -9,10 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./packages/frontend
-        
+    
     steps:
     - uses: actions/checkout@v3
     
@@ -23,16 +20,21 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     
-    - name: Use Node.js
-      uses: actions/setup-node@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
       with:
-        node-version: '16.x'
+        context: .
+        load: true
+        tags: zoobayd-frontend:latest
     
-    - name: Install Dependencies
-      run: npm install
+    - name: Copy build files
+      run: |
+        container_id=$(docker create zoobayd-frontend:latest)
+        docker cp $container_id:/usr/src/app/build ./build
+        docker rm $container_id
     
-    - name: Build Frontend
-      run: npm run build
-
     - name: Deploy to S3
       run: aws s3 sync build/ s3://zoobayd-platform/ --delete
