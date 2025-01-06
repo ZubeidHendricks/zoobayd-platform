@@ -16,7 +16,7 @@ jobs:
     defaults:
       run:
         working-directory: ./packages/frontend
-    
+        
     steps:
     - uses: actions/checkout@v3
     
@@ -30,14 +30,17 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16.x'
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
     
-    - name: Install Dependencies
+    - name: Clean Install
       run: |
-        rm -rf node_modules package-lock.json
-        npm install
+        npm ci
     
     - name: Build Frontend
-      run: npm run build
+      run: |
+        npm run build
 
     - name: Deploy to S3
-      run: aws s3 sync build/ s3://zoobayd-platform/ --delete
+      run: |
+        aws s3 sync build/ s3://zoobayd-platform/ --delete
