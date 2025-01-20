@@ -4,15 +4,15 @@
     "description": "AI-Powered Blockchain Development Platform",
     "private": true,
     "engines": {
-        "node": ">=18.0.0",
-        "npm": ">=9.0.0"
+        "node": "18.x",
+        "npm": "9.x"
     },
     "workspaces": [
         "packages/*"
     ],
     "scripts": {
         "dev": "npm run dev --workspace=@zoobayd/frontend",
-        "build": "npm run build --workspaces",
+        "build": "npm run build --workspace=@zoobayd/frontend",
         "start": "npm run start --workspace=@zoobayd/backend",
         "test": "npm run test --workspaces",
         "lint": "npm run lint --workspaces",
