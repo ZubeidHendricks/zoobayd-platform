@@ -15,7 +15,7 @@
             "dest": "packages/frontend/$1"
         }
     ],
-    "buildCommand": "npm run build --workspace=@zoobayd/frontend",
+    "buildCommand": "npm run build",
     "installCommand": "npm install",
     "framework": "nextjs",
     "outputDirectory": "packages/frontend/.next"
