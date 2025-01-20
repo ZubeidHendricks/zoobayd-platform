@@ -3,8 +3,9 @@
     "builds": [
         {
             "src": "packages/frontend/package.json",
-            "use": "@vercel/next",
+            "use": "@vercel/static-build",
             "config": { 
+                "distDir": "build",
                 "nodeVersion": "18.x" 
             }
         }
@@ -17,6 +18,5 @@
     ],
     "buildCommand": "npm run build",
     "installCommand": "npm install",
-    "framework": "nextjs",
-    "outputDirectory": "packages/frontend/.next"
+    "framework": "create-react-app"
 }
