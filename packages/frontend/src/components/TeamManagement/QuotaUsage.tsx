@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { getQuotaUsage } from '../../api/team';
+import { getQuotaUsage, QuotaInfo } from '../../api/team';
 import { ProgressBar } from '../ui/ProgressBar';
 import { Card } from '../ui/Card';
 
 export const QuotaUsage: React.FC = () => {
-  const [quotas, setQuotas] = useState([]);
+  const [quotas, setQuotas] = useState<QuotaInfo[]>([]);
 
   useEffect(() => {
+    const fetchQuotas = async () => {
+      const data = await getQuotaUsage();
+      setQuotas(data);
+    };
     fetchQuotas();
   }, []);
-
-  const fetchQuotas = async () => {
-    const data = await getQuotaUsage();
-    setQuotas(data);
-  };
 
   return (
     <Card>
