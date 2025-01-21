@@ -17,52 +17,52 @@ const sections = [
     icon: Coffee,
     description: 'Learn the basics of using Zoobayd Platform',
     links: [
-      { title: 'Quick Start Guide', href: '/docs/quick-start' },
-      { title: 'Installation', href: '/docs/installation' },
       { title: 'Basic Concepts', href: '/docs/concepts' },
-    ]
+      { title: 'Installation', href: '/docs/installation' },
+      { title: 'Quick Start Guide', href: '/docs/quick-start' }
+    ].sort((a, b) => a.title.localeCompare(b.title))
   },
   {
     title: 'Smart Contracts',
     icon: Code,
     description: 'Learn about creating and managing smart contracts',
     links: [
-      { title: 'Contract Templates', href: '/docs/templates' },
       { title: 'AI Generation', href: '/docs/ai-generation' },
-      { title: 'Custom Contracts', href: '/docs/custom-contracts' },
-    ]
+      { title: 'Contract Templates', href: '/docs/templates' },
+      { title: 'Custom Contracts', href: '/docs/custom-contracts' }
+    ].sort((a, b) => a.title.localeCompare(b.title))
   },
   {
     title: 'Security',
     icon: Terminal,
     description: 'Understand security features and best practices',
     links: [
-      { title: 'Security Analysis', href: '/docs/security' },
-      { title: 'Best Practices', href: '/docs/best-practices' },
       { title: 'Audit Reports', href: '/docs/audit-reports' },
-    ]
+      { title: 'Best Practices', href: '/docs/best-practices' },
+      { title: 'Security Analysis', href: '/docs/security' }
+    ].sort((a, b) => a.title.localeCompare(b.title))
   },
   {
     title: 'API Reference',
     icon: FileText,
     description: 'Comprehensive API documentation',
     links: [
-      { title: 'REST API', href: '/docs/api-rest' },
       { title: 'GraphQL API', href: '/docs/api-graphql' },
-      { title: 'WebSocket API', href: '/docs/api-websocket' },
-    ]
+      { title: 'REST API', href: '/docs/api-rest' },
+      { title: 'WebSocket API', href: '/docs/api-websocket' }
+    ].sort((a, b) => a.title.localeCompare(b.title))
   },
   {
     title: 'Configuration',
     icon: Settings,
     description: 'Configure and customize the platform',
     links: [
-      { title: 'Network Settings', href: '/docs/network-settings' },
-      { title: 'Gas Optimization', href: '/docs/gas-optimization' },
       { title: 'Advanced Config', href: '/docs/advanced-config' },
-    ]
+      { title: 'Gas Optimization', href: '/docs/gas-optimization' },
+      { title: 'Network Settings', href: '/docs/network-settings' }
+    ].sort((a, b) => a.title.localeCompare(b.title))
   }
-];
+].sort((a, b) => a.title.localeCompare(b.title));
 
 export const Documentation: React.FC = () => {
   return (
@@ -70,6 +70,7 @@ export const Documentation: React.FC = () => {
       <NavBar />
       
       <main className="pt-20">
+        {/* Documentation Header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
@@ -89,6 +90,7 @@ export const Documentation: React.FC = () => {
           </div>
         </div>
 
+        {/* Documentation Sections */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {sections.map((section) => (
