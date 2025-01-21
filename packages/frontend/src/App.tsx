@@ -1,27 +1,43 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { LandingPage } from './components/LandingPage';
-import { 
-  Features,
-  Pricing,
-  Documentation,
-  Login,
-  Signup 
-} from './pages';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import RootLayout from './components/layouts/RootLayout';
+import ErrorBoundary from './components/ErrorBoundary';
+import { Home, Features, Pricing, Login, Signup } from './pages';
+import { docsRoutes } from './routes/docs.routes';
 
-const App: React.FC = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/docs" element={<Documentation />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    </Router>
-  );
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: 'features',
+        element: <Features />,
+      },
+      {
+        path: 'pricing',
+        element: <Pricing />,
+      },
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'signup',
+        element: <Signup />,
+      },
+      ...docsRoutes,
+    ],
+  },
+]);
+
+const App = () => {
+  return <RouterProvider router={router} />;
 };
 
 export default App;
